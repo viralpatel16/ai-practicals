@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 5 - A* and AO* Algorithms</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .active {
+            display: block;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button.copy {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 5: A* and AO* Algorithms</h1>
+
+<div class="tabs">
+    <button onclick="showTab('aStar')">A* Algorithm</button>
+    <button onclick="showTab('aoStar')">AO* Algorithm</button>
+</div>
+
+<!-- A* -->
+<div id="aStar" class="content active">
+<h2>A* Algorithm</h2>
+<button class="copy" onclick="copyCode('code1')">Copy Code</button>
+
+<pre><code class="language-python" id="code1">
+import heapq
+
+distances = {
+    ('a', 'b'): 1,
+    ('a', 'c'): 4,
+    ('b', 'c'): 2,
+    ('b', 'd'): 5,
+    ('c', 'd'): 1
+}
+
+heuristics = {
+    ('a', 'd'): 7,
+    ('b', 'd'): 5,
+    ('c', 'd'): 2,
+    ('d', 'd'): 0
+}
+
+def get_neighbors(node):
+    neighbors = []
+    for (start, end), dist in distances.items():
+        if start == node:
+            neighbors.append((end, dist))
+        elif end == node:
+            neighbors.append((start, dist))
+    return neighbors
+
+def a_star(start, goal):
+    frontier = []
+    heapq.heappush(frontier, (heuristics[(start, goal)], 0, [start]))
+    visited = set()
+
+    while frontier:
+        f_score, g_score, path = heapq.heappop(frontier)
+        current = path[-1]
+
+        if current == goal:
+            return path, g_score
+
+        if current not in visited:
+            visited.add(current)
+
+            for neighbor, step_cost in get_neighbors(current):
+                if neighbor not in visited:
+                    new_g = g_score + step_cost
+                    new_f = new_g + heuristics.get((neighbor, goal), float('inf'))
+                    heapq.heappush(frontier, (new_f, new_g, path + [neighbor]))
+
+    return None, float('inf')
+
+path, cost = a_star('a', 'd')
+print("A* Path:", path)
+print("Cost:", cost)
+</code></pre>
+</div>
+
+<!-- AO* -->
+<div id="aoStar" class="content">
+<h2>AO* Algorithm</h2>
+<button class="copy" onclick="copyCode('code2')">Copy Code</button>
+
+<pre><code class="language-python" id="code2">
+import heapq
+
+distances = {
+    ('a', 'b'): 1,
+    ('a', 'c'): 4,
+    ('b', 'c'): 2,
+    ('b', 'd'): 5,
+    ('c', 'd'): 1
+}
+
+heuristics = {
+    ('a', 'd'): 7,
+    ('b', 'd'): 5,
+    ('c', 'd'): 2,
+    ('d', 'd'): 0
+}
+
+def get_neighbors(node):
+    neighbors = []
+    for (start, end), dist in distances.items():
+        if start == node:
+            neighbors.append((end, dist))
+        elif end == node:
+            neighbors.append((start, dist))
+    return neighbors
+
+def ao_star(start, goal):
+    visited = set()
+
+    def ao_search(current, path, cost):
+        if current == goal:
+            return path, cost
+
+        visited.add(current)
+        best_path = None
+        best_cost = float('inf')
+
+        for neighbor, step_cost in get_neighbors(current):
+            if neighbor not in visited:
+                new_cost = cost + step_cost
+                new_path, final_cost = ao_search(
+                    neighbor, path + [neighbor], new_cost
+                )
+
+                if final_cost < best_cost:
+                    best_cost = final_cost
+                    best_path = new_path
+
+        visited.remove(current)
+        return best_path, best_cost
+
+    return ao_search(start, [start], 0)
+
+path, cost = ao_star('a', 'd')
+print("AO* Path:", path)
+print("Cost:", cost)
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+function copyCode(id) {
+    const code = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

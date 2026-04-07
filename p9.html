@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 9 - Games (Tic-Tac-Toe & RPS)</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .active {
+            display: block;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button.copy {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 9: Game Development (Tic-Tac-Toe & Rock-Paper-Scissors)</h1>
+
+<div class="tabs">
+    <button onclick="showTab('tic')">Tic-Tac-Toe</button>
+    <button onclick="showTab('rps')">Rock-Paper-Scissors</button>
+</div>
+
+<!-- TIC TAC TOE -->
+<div id="tic" class="content active">
+<h2>Tic-Tac-Toe Game</h2>
+<button class="copy" onclick="copyCode('code1')">Copy Code</button>
+
+<pre><code class="language-python" id="code1">
+board = [' ']*9
+
+def print_board():
+    print()
+    print(board[0], '|', board[1], '|', board[2])
+    print('--+---+--')
+    print(board[3], '|', board[4], '|', board[5])
+    print('--+---+--')
+    print(board[6], '|', board[7], '|', board[8])
+    print()
+
+def check_winner(player):
+    win_conditions = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ]
+    for condition in win_conditions:
+        if board[condition[0]] == board[condition[1]] == board[condition[2]] == player:
+            return True
+    return False
+
+def is_draw():
+    return ' ' not in board
+
+current_player = 'X'
+
+while True:
+    print_board()
+    move = int(input(f"Player {current_player}, enter position (1-9): ")) - 1
+
+    if board[move] != ' ':
+        print("Position already taken. Try again.")
+        continue
+
+    board[move] = current_player
+
+    if check_winner(current_player):
+        print_board()
+        print(f"Player {current_player} wins!")
+        break
+
+    if is_draw():
+        print_board()
+        print("Game Draw!")
+        break
+
+    current_player = 'O' if current_player == 'X' else 'X'
+</code></pre>
+</div>
+
+<!-- ROCK PAPER SCISSORS -->
+<div id="rps" class="content">
+<h2>Rock-Paper-Scissors Game</h2>
+<button class="copy" onclick="copyCode('code2')">Copy Code</button>
+
+<pre><code class="language-python" id="code2">
+def print_choices():
+    print("\nChoices:")
+    print("1. Rock")
+    print("2. Paper")
+    print("3. Scissors\n")
+
+def get_choice(player):
+    while True:
+        choice = int(input(f"Player {player}, enter your choice (1-3): "))
+        if choice in [1, 2, 3]:
+            return choice
+        else:
+            print("Invalid choice. Try again.")
+
+def check_winner(p1, p2):
+    if p1 == p2:
+        return "Draw"
+    elif (p1 == 1 and p2 == 3) or \
+         (p1 == 2 and p2 == 1) or \
+         (p1 == 3 and p2 == 2):
+        return "Player 1"
+    else:
+        return "Player 2"
+
+choices = {1: "Rock", 2: "Paper", 3: "Scissors"}
+
+print("Rock-Paper-Scissors Game")
+
+print_choices()
+
+p1_choice = get_choice(1)
+p2_choice = get_choice(2)
+
+print(f"\nPlayer 1 chose: {choices[p1_choice]}")
+print(f"Player 2 chose: {choices[p2_choice]}")
+
+result = check_winner(p1_choice, p2_choice)
+
+if result == "Draw":
+    print("Game Draw!")
+else:
+    print(f"{result} wins!")
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+function copyCode(id) {
+    const code = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

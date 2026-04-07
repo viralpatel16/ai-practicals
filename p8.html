@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 8 - Father Child Relationship (Prolog)</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 8: Father-Child Relationship using Prolog</h1>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<div class="container">
+<pre><code class="language-python" id="codeBlock">
+# Step 1: Install Prolog
+!apt-get update
+!apt-get install -y swi-prolog
+
+# Step 2: Install PySwip
+!pip install pyswip
+
+# Step 3: Check version
+!swipl --version
+
+from pyswip import Prolog
+import tempfile
+import os
+
+prolog = Prolog()
+
+prolog_code_string = r"""
+% Facts
+father(a, b).
+father(a, c).
+father(b, d).
+father(b, e).
+father(c, f).
+
+parent(X, Y) :- father(X, Y).
+
+brother(X, Y) :-
+father(F, X),
+father(F, Y),
+X \= Y.
+
+cousin(X, Y) :-
+father(F1, X),
+father(F2, Y),
+F1 \= F2,
+father(G, F1),
+father(G, F2).
+
+grandson(X, Y) :-
+father(Y, F),
+father(F, X).
+
+descendent(X, Y) :-
+father(Y, X).
+descendent(X, Y) :-
+father(Z, X),
+descendent(Z, Y).
+"""
+
+with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pl') as temp_file:
+    temp_file.write(prolog_code_string)
+    temp_file_path = temp_file.name
+
+try:
+    prolog.consult(temp_file_path)
+
+    print("Executing Prolog queries:")
+
+    if list(prolog.query("brother(d, e).")):
+        print('d and e are brothers')
+
+    if list(prolog.query("cousin(d, f).")):
+        print('d and f are cousins')
+
+    if list(prolog.query("grandson(d, a).")):
+        print('d is a grandson of a')
+
+    if list(prolog.query("descendent(d, a).")):
+        print('d is a descendent of a')
+
+finally:
+    os.remove(temp_file_path)
+</code></pre>
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

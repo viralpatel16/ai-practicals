@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 10 - NLP</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .active {
+            display: block;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button.copy {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 10: Natural Language Processing (NLP)</h1>
+
+<div class="tabs">
+    <button onclick="showTab('nlp1')">Simple NLP</button>
+    <button onclick="showTab('nlp2')">Dynamic NLP</button>
+</div>
+
+<!-- PART 1 -->
+<div id="nlp1" class="content active">
+<h2>Simple NLP</h2>
+<button class="copy" onclick="copyCode('code1')">Copy Code</button>
+
+<pre><code class="language-python" id="code1">
+nouns = ["dog", "cat", "student", "teacher", "exam"]
+verbs = ["eat", "run", "study", "teach", "write"]
+positive_words = ["good", "happy", "excellent", "love"]
+negative_words = ["bad", "sad", "poor", "hate"]
+
+def simple_nlp(sentence):
+
+    print("Original Sentence:", sentence)
+
+    words = sentence.lower().split()
+    print("\nTokens:", words)
+
+    print("\nSyntactic Analysis:")
+
+    for word in words:
+        if word in nouns:
+            print(word, "→ Noun")
+        elif word in verbs:
+            print(word, "→ Verb")
+        else:
+            print(word, "→ Other")
+
+    positive_count = 0
+    negative_count = 0
+
+    for word in words:
+        if word in positive_words:
+            positive_count += 1
+        elif word in negative_words:
+            negative_count += 1
+
+    print("\nSentiment Analysis:")
+
+    if positive_count > negative_count:
+        print("Positive")
+    elif negative_count > positive_count:
+        print("Negative")
+    else:
+        print("Neutral")
+
+sentence = "Student study hard for exam but exam is bad"
+simple_nlp(sentence)
+</code></pre>
+</div>
+
+<!-- PART 2 -->
+<div id="nlp2" class="content">
+<h2>Dynamic NLP (NLTK + spaCy + TextBlob)</h2>
+<button class="copy" onclick="copyCode('code2')">Copy Code</button>
+
+<pre><code class="language-python" id="code2">
+!pip install -U spacy textblob nltk
+!python -m spacy download en_core_web_sm
+!python -m textblob.download_corpora
+
+import nltk
+import spacy
+from textblob import TextBlob
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+nlp = spacy.load("en_core_web_sm")
+
+def spell_check_nlp(sentence):
+
+    print("\nOriginal Sentence:")
+    print(sentence)
+
+    tokens = word_tokenize(sentence)
+    print("\nTokens:")
+    print(tokens)
+
+    corrected_words = []
+
+    for word in tokens:
+        if word.isalpha():
+            corrected_word = str(TextBlob(word).correct())
+        else:
+            corrected_word = word
+        corrected_words.append(corrected_word)
+
+    corrected_sentence = " ".join(corrected_words)
+
+    print("\nCorrected Sentence:")
+    print(corrected_sentence)
+
+    pos_tags = pos_tag(corrected_words)
+    print("\nPOS Tags:")
+    print(pos_tags)
+
+    doc = nlp(corrected_sentence)
+
+    print("\nDependencies:")
+    for token in doc:
+        print(token.text, token.dep_, token.head.text)
+
+    return corrected_sentence
+
+
+user_input = input("Enter sentence: ")
+spell_check_nlp(user_input)
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+function copyCode(id) {
+    const code = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

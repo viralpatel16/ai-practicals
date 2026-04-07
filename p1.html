@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 1 Code</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .code-container {
+            width: 80%;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 1: Medical Expert System (Code)</h1>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<div class="code-container">
+<pre><code class="language-python" id="codeBlock">
+# Practical 1
+# SIMPLE MEDICAL EXPERT SYSTEM (COLD / FLU)
+
+# 1. DISEASE KNOWLEDGE (FRAMES)
+DISEASES = {
+    "common_cold": {
+        "name": "Common Cold",
+        "severity": "mild",
+        "treatment": "Rest, fluids, paracetamol if needed."
+    },
+    "flu": {
+        "name": "Influenza (Flu)",
+        "severity": "moderate",
+        "treatment": "Rest, fluids, medical advice."
+    },
+    "pneumonia": {
+        "name": "Pneumonia",
+        "severity": "severe",
+        "treatment": "Medical treatment required."
+    }
+}
+
+# 2. SIMPLE RULES
+RULES = [
+    {
+        "name": "R1",
+        "conditions": {
+            "fever": "mild",
+            "runny_nose": "yes",
+            "body_pain": "no"
+        },
+        "conclusion": "common_cold"
+    },
+    {
+        "name": "R2",
+        "conditions": {
+            "fever": "high",
+            "runny_nose": "no",
+            "body_pain": "yes",
+            "dry_cough": "yes"
+        },
+        "conclusion": "flu"
+    },
+    {
+        "name": "R3",
+        "conditions": {
+            "fever": "high",
+            "runny_nose": "yes",
+            "body_pain": "yes",
+            "dry_cough": "yes"
+        },
+        "conclusion": "pneumonia"
+    }
+]
+
+# 3. ASK USER SYMPTOMS
+def ask_yes_no(msg):
+    return "yes" if input(msg + " (y/n): ").lower().startswith("y") else "no"
+
+
+def get_facts():
+    print("\nEnter your symptoms:\n")
+
+    fever = input("Fever level (none/mild/high): ").lower()
+    runny_nose = ask_yes_no("Runny nose?")
+    body_pain = ask_yes_no("Body pain?")
+    dry_cough = ask_yes_no("Dry cough?")
+
+    return {
+        "fever": fever,
+        "runny_nose": runny_nose,
+        "body_pain": body_pain,
+        "dry_cough": dry_cough
+    }
+
+# 4. RULE CHECKING
+def rule_matches(rule, symptoms):
+    for key, needed_value in rule["conditions"].items():
+        if symptoms.get(key) != needed_value:
+            return False
+    return True
+
+
+def diagnose(symptoms):
+    for rule in RULES:
+        if rule_matches(rule, symptoms):
+            return rule["conclusion"], rule["name"]
+    return None, None
+
+# 5. OUTPUT RESULT
+def show_result(disease_key, rule_used):
+    if disease_key is None:
+        print("\nDiagnosis not found. Please consult a doctor.\n")
+        return
+
+    dis = DISEASES[disease_key]
+
+    print("\n========== RESULT ==========")
+    print("Disease      :", dis["name"])
+    print("Rule Matched :", rule_used)
+    print("Severity     :", dis["severity"])
+    print("Treatment    :", dis["treatment"])
+    print("============================\n")
+
+# 6. MAIN PROGRAM
+def main():
+    print("\n--------------------------------------")
+    print(" SIMPLE MEDICAL EXPERT SYSTEM (COLD / FLU)")
+    print("--------------------------------------\n")
+
+    symptoms = get_facts()
+    disease, rule_used = diagnose(symptoms)
+    show_result(disease, rule_used)
+
+
+main()
+</code></pre>
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

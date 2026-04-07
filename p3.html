@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 3 - CSP</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .active {
+            display: block;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 3: Constraint Satisfaction Problems (CSP)</h1>
+
+<div class="tabs">
+    <button onclick="showTab('csp1')">Doctor Appointment CSP</button>
+    <button onclick="showTab('csp2')">Dynamic CSP (Excel)</button>
+</div>
+
+<!-- PART 1 -->
+<div id="csp1" class="content active">
+<h2>Doctor Appointment CSP</h2>
+
+<pre><code class="language-python">
+doctor={
+    "name": "Dr_A",
+    "available": ["10AM", "11AM","12PM","2PM","3PM"],
+    "booked":{}
+}
+
+while True:
+  print("\n--- Doctor Appointment System---")
+
+  print("\n Available Slots:")
+  if doctor["available"]:
+    for slot in doctor["available"]:
+      print(slot)
+  else:
+    print("No available slots")
+
+  print("\n Booked Slots:")
+  if doctor["booked"]:
+    for slot, patient in doctor["booked"].items():
+      print(slot,"->", patient)
+  else:
+    print("None")
+
+  print("\n1. Book Appointment")
+  print("2. Exit")
+
+  choice=input("Enter your choice:")
+
+  if choice=="1":
+    patient=input("Enter patient name:")
+    slot=input("Enter slot timing to book:")
+
+    if slot in doctor["available"]:
+      doctor["available"].remove(slot)
+      doctor["booked"][slot]=patient
+      print("Appointment booked successfully!")
+    else:
+      print("Slot not available")
+
+  elif choice=="2":
+    print("Thank you")
+    break
+
+  else:
+    print("Invalid choice")
+</code></pre>
+</div>
+
+<!-- PART 2 -->
+<div id="csp2" class="content">
+<h2>Dynamic CSP (Excel Integration)</h2>
+
+<pre><code class="language-python">
+import pandas as pd
+from datetime import datetime
+import os
+
+doctor={
+    "name":"Dr_A",
+    "available":["10AM","11AM","12PM","2PM","3PM"],
+    "booked":{}
+}
+
+EXCEL_FILE="appointments.xlsx"
+SHEET_NAME="Appointments"
+
+def initialize_excel():
+  if not os.path.exists(EXCEL_FILE):
+    row=[]
+    for slot in doctor["available"]:
+      row.append([
+          doctor["name"],
+          slot,
+          "Available",
+          "Available",
+          datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      ])
+
+    df = pd.DataFrame(row, columns=[
+         "Doctor", "Slot", "Patient", "Status", "Timestamp"
+    ])
+    df.to_excel(EXCEL_FILE, sheet_name=SHEET_NAME, index=False)
+
+def update_excel(slot, patient_name, status):
+  df=pd.read_excel(EXCEL_FILE, sheet_name=SHEET_NAME)
+  timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+  if slot in df["Slot"].values:
+    df.loc[df["Slot"] == slot, ["Patient", "Status", "Timestamp"]] = [patient_name, status, timestamp]
+  else:
+    df.loc[len(df)] = [
+        doctor["name"],
+        slot,
+        patient_name,
+        status,
+        timestamp
+    ]
+
+  df.to_excel(EXCEL_FILE, sheet_name=SHEET_NAME, index=False)
+
+initialize_excel()
+
+while True:
+  print("\n--- Doctor Appointment System ---")
+
+  print("\nAvailable Slots:")
+  if doctor["available"]:
+    for slot in doctor["available"]:
+      print(slot)
+  else:
+    print("No slots available")
+
+  print("\nBooked Slots:")
+  if doctor["booked"]:
+    for slot, patient_name in doctor["booked"].items():
+      print(slot, "→", patient_name)
+  else:
+    print("None")
+
+  print("\n1. Book Slot")
+  print("2. Exit")
+
+  choice = input("Enter your choice: ")
+
+  if choice == "1":
+        patient_name = input("Enter patient name: ")
+        slot = input("Enter slot timing to book: ")
+
+        if slot in doctor["available"]:
+            doctor["available"].remove(slot)
+            doctor["booked"][slot] = patient_name
+            update_excel(slot, patient_name, "Booked")
+            print("Slot booked successfully")
+        else:
+            print("Slot not available")
+
+  elif choice == "2":
+        print("Thank you!")
+        break
+
+  else:
+        print("Invalid choice")
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+}
+</script>
+
+</body>
+</html>

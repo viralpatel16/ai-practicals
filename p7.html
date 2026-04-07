@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 7 - BFS & DFS (Water Jug)</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        .active {
+            display: block;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button.copy {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 7: BFS & DFS (Water Jug Problem)</h1>
+
+<div class="tabs">
+    <button onclick="showTab('bfs')">BFS</button>
+    <button onclick="showTab('dfs')">DFS</button>
+</div>
+
+<!-- BFS -->
+<div id="bfs" class="content active">
+<h2>BFS (Water Jug)</h2>
+<button class="copy" onclick="copyCode('code1')">Copy Code</button>
+
+<pre><code class="language-python" id="code1">
+from collections import deque
+
+def bfs():
+  jugA, jugB = 4, 2
+  start = (0, 0)
+  goal = (4, 0)
+
+  queue = deque([start])
+  visited = set([start])
+  parent = {start: None}
+
+  while queue:
+    a, b = queue.popleft()
+
+    if (a, b) == goal:
+      break
+
+    states = [
+        (jugA, b),
+        (a, jugB),
+        (0, b),
+        (a, 0),
+        (min(a + b, jugA), max(0, a + b - jugA)),
+        (max(0, a + b - jugB), min(a + b, jugB)),
+    ]
+
+    for state in states:
+      if state not in visited:
+        visited.add(state)
+        parent[state] = (a, b)
+        queue.append(state)
+
+  # print path
+  path = []
+  cur = goal
+  while cur:
+    path.append(cur)
+    cur = parent[cur]
+
+  print("Path to fill Jug A to 4 liters (BFS):")
+  for state in reversed(path):
+    print(state)
+
+bfs()
+</code></pre>
+</div>
+
+<!-- DFS -->
+<div id="dfs" class="content">
+<h2>DFS (Water Jug)</h2>
+<button class="copy" onclick="copyCode('code2')">Copy Code</button>
+
+<pre><code class="language-python" id="code2">
+from collections import deque
+
+def dfs():
+    jugA, jugB = 4, 2
+    start = (0, 0)
+    goal = (4, 0)
+
+    stack = deque([start])
+    visited = set([start])
+    parent = {start: None}
+
+    while stack:
+        a, b = stack.pop()
+
+        if (a, b) == goal:
+            break
+
+        states = [
+            (jugA, b),
+            (a, jugB),
+            (0, b),
+            (a, 0),
+            (min(a + b, jugA), max(0, a + b - jugA)),
+            (max(0, a + b - jugB), min(a + b, jugB)),
+        ]
+
+        for state in states:
+            if state not in visited:
+                visited.add(state)
+                parent[state] = (a, b)
+                stack.append(state)
+
+    path = []
+    cur = goal
+    while cur:
+        path.append(cur)
+        cur = parent[cur]
+
+    print("Path to fill Jug A to 4 liters (DFS):")
+    for state in reversed(path):
+        print(state)
+
+dfs()
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+function copyCode(id) {
+    const code = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

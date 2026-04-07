@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 4 - Recommendation System</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 4: Recommendation System</h1>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<div class="container">
+<pre><code class="language-python" id="codeBlock">
+# Practical 4
+
+# prerequisites for each subject
+prerequisites = {
+    'math': [],
+    'algebra': ['math'],
+    'arithmetic': [],
+    'physics': ['algebra'],
+    'chemistry': ['math'],
+    'biology': ['chemistry'],
+    'computer_science': ['algebra']
+}
+
+# knowledge of each student
+knows = {
+    'john': ['arithmetic'],
+    'jane': ['algebra'],
+    'mary': ['math'],
+    'jack': ['chemistry']
+}
+
+# Learning goals for each student
+goals = {
+    'john': 'computer_science',
+    'jane': 'physics',
+    'mary': 'biology',
+    'jack': 'computer_science'
+}
+
+# function to check if a student can learn a subject
+def can_learn(student, subject):
+    prerequisites_for_subject = prerequisites.get(subject, [])
+    return all(prereq in knows.get(student, []) for prereq in prerequisites_for_subject)
+
+# function to recommend the next step for a student
+def recommend_next_step(student):
+    goal = goals.get(student)
+    if not goal:
+        return None
+
+    # check missing prerequisite
+    for prerequisite in prerequisites.get(goal, []):
+        if prerequisite not in knows.get(student, []):
+            return prerequisite
+
+    # if all prerequisites are known
+    return goal
+
+
+print("Recommend next step for John:", recommend_next_step('john'))
+print("Recommend next step for Jane:", recommend_next_step('jane'))
+print("Recommend next step for Mary:", recommend_next_step('mary'))
+print("Recommend next step for Jack:", recommend_next_step('jack'))
+</code></pre>
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

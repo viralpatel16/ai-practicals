@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 2 - AI Algorithms</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .content {
+            display: none;
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 2: AI Search Algorithms</h1>
+
+<div class="tabs">
+    <button onclick="showTab('p1')">Hill Climbing</button>
+    <button onclick="showTab('p2')">Best-First Search</button>
+    <button onclick="showTab('p3')">Dynamic Hill Climbing</button>
+</div>
+
+<!-- PART 1 -->
+<div id="p1" class="content active">
+<h2>Hill Climbing</h2>
+<pre><code class="language-python">
+prices = [100, 20, 100, 40, 160, 40, 100, 200, 201, 50]
+
+def hill_climbing(prices, start_index):
+    current = start_index
+    print(f"\nStart at index {current}, value = {prices[current]}")
+
+    while True:
+        neighbors = []
+
+        if current - 1 >= 0:
+            neighbors.append(current - 1)
+        if current + 1 < len(prices):
+            neighbors.append(current + 1)
+
+        best = current
+        for n in neighbors:
+            if prices[n] > prices[best]:
+                best = n
+
+        if best == current:
+            print(f"Stop at index {current}, value = {prices[current]}")
+            return prices[current]
+
+        print(f"Move from index {current} ({prices[current]}) "
+              f"to index {best} ({prices[best]})")
+        current = best
+
+
+max_value = float('-inf')
+
+for start in range(len(prices)):
+    value = hill_climbing(prices, start)
+    if value > max_value:
+        max_value = value
+
+print("\nFinal maximum value (Global Max):", max_value)
+</code></pre>
+</div>
+
+<!-- PART 2 -->
+<div id="p2" class="content">
+<h2>Best-First Search</h2>
+<pre><code class="language-python">
+import heapq
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D'],
+    'C': ['D'],
+    'D': ['G'],
+    'G': []
+}
+
+heuristic = {
+    'A': 10,
+    'B': 6,
+    'C': 4,
+    'D': 5,
+    'G': 0
+}
+
+def best_first_search(start, goal):
+    open_list = []
+    heapq.heappush(open_list, (heuristic[start], start))
+
+    parent = {start: None}
+    visited = set()
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current:
+                path.append(current)
+                current = parent[current]
+            return path[::-1], "SUCCESS"
+
+        visited.add(current)
+
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                parent[neighbor] = current
+                heapq.heappush(open_list, (heuristic[neighbor], neighbor))
+
+    return [], "FAILED"
+
+path, result = best_first_search('A', 'G')
+print("Path:", path)
+print("Result:", result)
+</code></pre>
+</div>
+
+<!-- PART 3 -->
+<div id="p3" class="content">
+<h2>Dynamic Hill Climbing</h2>
+<pre><code class="language-python">
+import pandas as pd
+
+df = pd.read_excel("dataset.xlsx")
+
+prices = df["Current_Inventory"].tolist()
+pids = df["Product_ID"].tolist()
+
+def hill_climbing(prices, pids, start_index):
+    current = start_index
+    print(f"\nStart at {pids[current]} with Price = {prices[current]}")
+
+    while True:
+        neighbors = []
+
+        if current - 1 >= 0:
+            neighbors.append(current - 1)
+        if current + 1 < len(prices):
+            neighbors.append(current + 1)
+
+        best = current
+
+        for n in neighbors:
+            if prices[n] > prices[best]:
+                best = n
+
+        if best == current:
+            print(f"STOP at {pids[current]} with Price = {prices[current]}")
+            return prices[current], pids[current]
+
+        print(f"Move from {pids[current]} ({prices[current]}) "
+              f"to {pids[best]} ({prices[best]})")
+
+        current = best
+
+max_value = -1
+max_pid = None
+
+for i in range(len(prices)):
+    value, pid = hill_climbing(prices, pids, i)
+
+    if value > max_value:
+        max_value = value
+        max_pid = pid
+
+print("\nFINAL RESULT")
+print("Maximum Price :", max_value)
+print("Product ID    :", max_pid)
+</code></pre>
+</div>
+
+<script>
+function showTab(tabId) {
+    let tabs = document.querySelectorAll(".content");
+    tabs.forEach(tab => tab.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+}
+</script>
+
+</body>
+</html>

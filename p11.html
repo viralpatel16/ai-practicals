@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 11 - Neural Network</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 11: Neural Network Architecture</h1>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<div class="container">
+<pre><code class="language-python" id="codeBlock">
+import math
+import random
+
+network_structure = {
+    "input_layer": 3,
+    "hidden_layer": 5,
+    "output_layer": 2
+}
+
+connections = [
+    ("input_layer", "hidden_layer", 1, 1, random.uniform(-1, 1)),
+    ("input_layer", "hidden_layer", 2, 1, random.uniform(-1, 1)),
+    ("input_layer", "hidden_layer", 3, 1, random.uniform(-1, 1)),
+    ("hidden_layer", "output_layer", 1, 1, random.uniform(-1, 1)),
+    ("hidden_layer", "output_layer", 2, 1, random.uniform(-1, 1)),
+    ("hidden_layer", "output_layer", 3, 2, random.uniform(-1, 1)),
+    ("hidden_layer", "output_layer", 4, 2, random.uniform(-1, 1)),
+    ("hidden_layer", "output_layer", 5, 2, random.uniform(-1, 1)),
+]
+
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+
+def forward_propagate(layer, inputs):
+    print(f"Forward propagating through {layer} with inputs: {inputs}")
+
+    if layer == "input_layer":
+        return inputs
+
+    outputs = []
+
+    if layer == "hidden_layer":
+        for i in range(1, network_structure[layer] + 1):
+            output = neuron_output(layer, i, inputs)
+            outputs.append(output)
+
+    if layer == "output_layer":
+        for i in range(1, network_structure[layer] + 1):
+            output = neuron_output(layer, i, inputs)
+            outputs.append(output)
+
+    return outputs
+
+def neuron_output(layer, neuron_index, inputs):
+    weighted_inputs = []
+
+    for connection in connections:
+        from_layer, to_layer, from_neuron, to_neuron, weight = connection
+
+        if to_layer == layer and to_neuron == neuron_index:
+            input_value = inputs[from_neuron - 1]
+            weighted_inputs.append(weight * input_value)
+
+    sum_inputs = sum(weighted_inputs)
+    return sigmoid(sum_inputs)
+
+def run_network(inputs):
+    hidden_outputs = forward_propagate("hidden_layer", inputs)
+    output = forward_propagate("output_layer", hidden_outputs)
+    return output
+
+input_data = [0.1, 0.4, 0.6]
+output_data = run_network(input_data)
+
+print("Output after forward propagation:", output_data)
+</code></pre>
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>

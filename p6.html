@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practical 6 - Fuzzy Logic System</title>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            text-align: left;
+        }
+
+        pre {
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Practical 6: Fuzzy Logic-Based System for Stock Prediction</h1>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<div class="container">
+<pre><code class="language-python" id="codeBlock">
+# Practical 6
+
+def trend(label, x):
+    if label == "high":
+        return x > 70
+    elif label == "medium":
+        return 30 < x <= 70
+    elif label == "low":
+        return x <= 30
+    return False
+
+
+def volume(label, x):
+    if label == "high":
+        return x > 1000
+    elif label == "medium":
+        return 500 < x <= 1000
+    elif label == "low":
+        return x <= 500
+    return False
+
+
+def sentiment(label, x):
+    if label == "positive":
+        return x > 60
+    elif label == "neutral":
+        return 40 < x <= 60
+    elif label == "negative":
+        return x <= 40
+    return False
+
+
+rules = [
+    (("trend", "high"), ("volume", "high"), ("sentiment", "positive"), "buy"),
+    (("trend", "medium"), ("volume", "medium"), ("sentiment", "neutral"), "hold"),
+    (("trend", "low"), ("volume", "low"), ("sentiment", "negative"), "sell"),
+    (("trend", "high"), ("volume", "low"), ("sentiment", "neutral"), "hold"),
+    (("trend", "low"), ("volume", "high"), ("sentiment", "positive"), "hold"),
+]
+
+
+def predict_trend(trend_value, volume_value, sentiment_value):
+    for rule in rules:
+        cond1, cond2, cond3, action = rule
+        if (
+            trend(cond1[1], trend_value)
+            and volume(cond2[1], volume_value)
+            and sentiment(cond3[1], sentiment_value)
+        ):
+            return action
+    return "no_decision"
+
+
+def print_prediction(trend_value, volume_value, sentiment_value):
+    action = predict_trend(trend_value, volume_value, sentiment_value)
+    print(
+        f"Trend: {trend_value}, Volume: {volume_value}, "
+        f"Sentiment: {sentiment_value}, Action: {action}"
+    )
+
+
+# Example usage
+print_prediction(75, 1200, 65)
+</code></pre>
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copied!");
+}
+</script>
+
+</body>
+</html>
